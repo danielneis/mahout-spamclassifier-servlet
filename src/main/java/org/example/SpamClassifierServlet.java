@@ -1,6 +1,7 @@
 package org.example;
 
 import java.io.IOException;
+import java.io.Reader;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,14 +12,7 @@ public class SpamClassifierServlet extends HttpServlet {
     private SpamClassifier sc;
 
     public void init() {
-        try {
-            sc = new SpamClassifier();
-            sc.init(new File("bayes-model"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (InvalidDatastoreException e) {
-            e.printStackTrace();
-        }
+        sc = new SpamClassifier();
     }
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -32,7 +26,7 @@ public class SpamClassifierServlet extends HttpServlet {
 
             resp.getWriter().print(String.format("{\"category\":\"%s\", \"time\": %d}", category, t1-t0));
 
-        } catch (InvalidDatastoreException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

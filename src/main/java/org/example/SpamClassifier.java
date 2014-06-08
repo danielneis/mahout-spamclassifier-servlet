@@ -1,5 +1,7 @@
 package org.example;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.StringReader;
@@ -29,27 +31,9 @@ import org.apache.mahout.vectorizer.TFIDF;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
 
-
 public class SpamClassifier {
 
-    private ClassifierContext context;
-    private Algorithm algorithm;
-    private Datastore datastore;
-    private File modelDirectory;
-    Analyzer analyzer;
-
-    public SpamClassifier(){
-        analyzer = new DefaultAnalyzer();
-    }
-
-    public void init(File basePath) throws FileNotFoundException, InvalidDatastoreException{
-
-        if(!basePath.isDirectory() || !basePath.canRead()){
-            throw new FileNotFoundException(basePath.toString());
-        }
-    }
-
-    public String classify(Reader post) throws IOException, InvalidDatastoreException {
+    public String classify(Reader post) throws IOException {
 
         Configuration configuration = new Configuration();
 
@@ -74,7 +58,7 @@ public class SpamClassifier {
         Multiset<String> words = ConcurrentHashMultiset.create();
 
         // extract words from post
-        TokenStream ts = analyzer.tokenStream("text", new StringReader(post));
+        TokenStream ts = analyzer.tokenStream("text", post);
         CharTermAttribute termAtt = ts.addAttribute(CharTermAttribute.class);
         ts.reset();
         int wordCount = 0;
@@ -89,6 +73,8 @@ public class SpamClassifier {
                 }
             }
         }
+
+		int documentCount = documentFrequency.get(-1).intValue();
 
         // create vector wordId => weight using tfidf
         Vector vector = new RandomAccessSparseVector(10000);

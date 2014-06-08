@@ -1,3 +1,4 @@
+/*
 package org.example;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,3 +31,4 @@ public class SpamClassifierHandler extends AbstractHandler
         server.join();
     }
 }
+*/

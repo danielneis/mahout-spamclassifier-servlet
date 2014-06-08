@@ -5,11 +5,11 @@
         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" 
         version="2.5">
     <servlet>
-        <servlet-name>Antispam</servlet-name>
-        <servlet-class>org.example.Antispam</servlet-class>
+        <servlet-name>SpamClassifier</servlet-name>
+        <servlet-class>org.example.SpamClassifierServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Antispam</servlet-name>
+        <servlet-name>SpamClassifier</servlet-name>
         <url-pattern>/antispam/*</url-pattern>
     </servlet-mapping>
 </web-app>
