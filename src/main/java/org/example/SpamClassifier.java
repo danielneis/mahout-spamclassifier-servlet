@@ -37,11 +37,11 @@ public class SpamClassifier {
 
         Configuration configuration = new Configuration();
 
-        String mahoutPath = "./mahout-output-dir";
+        String mahoutPath = "./mahout-output/";
         String modelPath = mahoutPath + "/model";
-        String labelIndexPath = mahoutPath + "/label/";
-        String dictionaryPath = mahoutPath + "/dictionary/";
-        String documentFrequencyPath = mahoutPath + "/document-frequency/";
+        String labelIndexPath = mahoutPath + "/labelIndex";
+        String dictionaryPath = mahoutPath + "/vectors/dictionary.file-0";
+        String documentFrequencyPath = mahoutPath + "/vectors/df-count";
 
         // model is a matrix (wordId, labelId) => probability score
         NaiveBayesModel model = NaiveBayesModel.materialize(new Path(modelPath), configuration);
@@ -50,7 +50,7 @@ public class SpamClassifier {
 
         // labels is a map label => classId
         Map<Integer, String> labels = BayesUtils.readLabelIndex(configuration, new Path(labelIndexPath));
-        Map<String, Integer> dictionary = readDictionnary(configuration, new Path(dictionaryPath));
+        Map<String, Integer> dictionary = readDictionary(configuration, new Path(dictionaryPath));
         Map<Integer, Long> documentFrequency = readDocumentFrequency(configuration, new Path(documentFrequencyPath));
 
         // analyzer used to extract word from post
@@ -75,7 +75,7 @@ public class SpamClassifier {
             }
         }
 
-		int documentCount = documentFrequency.get(-1).intValue();
+        int documentCount = documentFrequency.get(-1).intValue();
 
         // create vector wordId => weight using tfidf
         Vector vector = new RandomAccessSparseVector(10000);
@@ -88,6 +88,7 @@ public class SpamClassifier {
             double tfIdfValue = tfidf.calculate(count, freq.intValue(), wordCount, documentCount);
             vector.setQuick(wordId, tfIdfValue);
         }
+
         // With the classifier, we get one score for each label 
         // The label with the highest score is the one the post is more likely to
         // be associated to
@@ -107,12 +108,12 @@ public class SpamClassifier {
         return labels.get(bestCategoryId);
     }
 
-    public static Map<String, Integer> readDictionnary(Configuration conf, Path dictionnaryPath) {
-            Map<String, Integer> dictionnary = new HashMap<String, Integer>();
-            for (Pair<Text, IntWritable> pair : new SequenceFileIterable<Text, IntWritable>(dictionnaryPath, true, conf)) {
-                    dictionnary.put(pair.getFirst().toString(), pair.getSecond().get());
+    public static Map<String, Integer> readDictionary(Configuration conf, Path dictionaryPath) {
+            Map<String, Integer> dictionary = new HashMap<String, Integer>();
+            for (Pair<Text, IntWritable> pair : new SequenceFileIterable<Text, IntWritable>(dictionaryPath, true, conf)) {
+                    dictionary.put(pair.getFirst().toString(), pair.getSecond().get());
             }
-            return dictionnary;
+            return dictionary;
     }
 
     public static Map<Integer, Long> readDocumentFrequency(Configuration conf, Path documentFrequencyPath) {
