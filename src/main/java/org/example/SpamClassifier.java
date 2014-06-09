@@ -37,10 +37,11 @@ public class SpamClassifier {
 
         Configuration configuration = new Configuration();
 
-        String modelPath = "/home/neis/test/";
-        String labelIndexPath = "/home/neis/test/";
-        String dictionaryPath = "/home/neis/test/";
-        String documentFrequencyPath = "/home/neis/test/";
+        String mahoutPath = "./mahout-output-dir";
+        String modelPath = mahoutPath + "/model";
+        String labelIndexPath = mahoutPath + "/label/";
+        String dictionaryPath = mahoutPath + "/dictionary/";
+        String documentFrequencyPath = mahoutPath + "/document-frequency/";
 
         // model is a matrix (wordId, labelId) => probability score
         NaiveBayesModel model = NaiveBayesModel.materialize(new Path(modelPath), configuration);
@@ -52,7 +53,7 @@ public class SpamClassifier {
         Map<String, Integer> dictionary = readDictionnary(configuration, new Path(dictionaryPath));
         Map<Integer, Long> documentFrequency = readDocumentFrequency(configuration, new Path(documentFrequencyPath));
 
-        // analyzer used to extract word from tweet
+        // analyzer used to extract word from post
         Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
 
         Multiset<String> words = ConcurrentHashMultiset.create();
@@ -88,7 +89,7 @@ public class SpamClassifier {
             vector.setQuick(wordId, tfIdfValue);
         }
         // With the classifier, we get one score for each label 
-        // The label with the highest score is the one the tweet is more likely to
+        // The label with the highest score is the one the post is more likely to
         // be associated to
         Vector resultVector = classifier.classifyFull(vector);
         double bestScore = -Double.MAX_VALUE;
