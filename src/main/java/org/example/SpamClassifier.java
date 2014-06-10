@@ -37,10 +37,13 @@ public class SpamClassifier {
 
         Configuration configuration = new Configuration();
 
-        String modelPath = "model";
-        String labelIndexPath = "labelIndex";
-        String dictionaryPath = "dictionary.file-0";
-        String documentFrequencyPath = "df-count";
+        String modelPath = "mahout-output/model";
+        String labelIndexPath = "mahout-output/labelIndex";
+        String dictionaryPath = "mahout-output/dictionary.file-0";
+        String documentFrequencyPath = "mahout-output/df-count";
+
+        configuration.addResource(new Path("/home/neis/hadoop-1.2.1/conf/core-site.xml"));
+        configuration.addResource(new Path("/home/neis/hadoop-1.2.1/conf/hdfs-site.xml"));
 
         // model is a matrix (wordId, labelId) => probability score
         NaiveBayesModel model = NaiveBayesModel.materialize(new Path(modelPath), configuration);
