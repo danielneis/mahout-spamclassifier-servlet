@@ -37,11 +37,10 @@ public class SpamClassifier {
 
         Configuration configuration = new Configuration();
 
-        String mahoutPath = "./mahout-output/";
-        String modelPath = mahoutPath + "/model";
-        String labelIndexPath = mahoutPath + "/labelIndex";
-        String dictionaryPath = mahoutPath + "/vectors/dictionary.file-0";
-        String documentFrequencyPath = mahoutPath + "/vectors/df-count";
+        String modelPath = "model";
+        String labelIndexPath = "labelIndex";
+        String dictionaryPath = "dictionary.file-0";
+        String documentFrequencyPath = "df-count";
 
         // model is a matrix (wordId, labelId) => probability score
         NaiveBayesModel model = NaiveBayesModel.materialize(new Path(modelPath), configuration);
