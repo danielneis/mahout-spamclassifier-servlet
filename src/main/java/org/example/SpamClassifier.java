@@ -1,5 +1,6 @@
 package org.example;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.BufferedReader;
@@ -28,6 +29,8 @@ import org.apache.mahout.math.Vector;
 import org.apache.mahout.math.Vector.Element;
 import org.apache.mahout.vectorizer.TFIDF;
 
+import org.apache.mahout.classifier.sgd.ModelSerializer;
+
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Multiset;
 
@@ -37,18 +40,19 @@ public class SpamClassifier {
 
         Configuration configuration = new Configuration();
 
-        String modelPath = "mahout-output/model";
-        String labelIndexPath = "mahout-output/labelIndex";
-        String dictionaryPath = "mahout-output/dictionary.file-0";
-        String documentFrequencyPath = "mahout-output/df-count";
+        String modelPath = "model";
+        String labelIndexPath = "labelIndex";
+        String dictionaryPath = "dictionary.file-0";
+        String documentFrequencyPath = "df-count";
 
-        configuration.addResource(new Path("/home/neis/hadoop-1.2.1/conf/core-site.xml"));
-        configuration.addResource(new Path("/home/neis/hadoop-1.2.1/conf/hdfs-site.xml"));
+    //    configuration.addResource(new Path("/home/neis/hadoop-1.2.1/conf/core-site.xml"));
+    //    configuration.addResource(new Path("/home/neis/hadoop-1.2.1/conf/hdfs-site.xml"));
+        FileInputStream in = new FileInputStream(modelPath);
+        StandardNaiveBayesClassifier classifier = ModelSerializer.readBinary(in, StandardNaiveBayesClassifier.class);
+        in.close();
 
         // model is a matrix (wordId, labelId) => probability score
-        NaiveBayesModel model = NaiveBayesModel.materialize(new Path(modelPath), configuration);
-
-        StandardNaiveBayesClassifier classifier = new StandardNaiveBayesClassifier(model);
+    //    NaiveBayesModel model = NaiveBayesModel.materialize(new Path(modelPath), configuration);
 
         // labels is a map label => classId
         Map<Integer, String> labels = BayesUtils.readLabelIndex(configuration, new Path(labelIndexPath));
@@ -95,6 +99,9 @@ public class SpamClassifier {
         // The label with the highest score is the one the post is more likely to
         // be associated to
         Vector resultVector = classifier.classifyFull(vector);
+        int cat = resultVector.maxValueIndex();
+        double vscore = resultVector.maxValue();
+
         double bestScore = -Double.MAX_VALUE;
         int bestCategoryId = -1;
         for(Element element: resultVector.all()) {
