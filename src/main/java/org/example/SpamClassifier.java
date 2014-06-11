@@ -97,6 +97,7 @@ public class SpamClassifier {
         Vector resultVector = classifier.classifyFull(vector);
         double bestScore = -Double.MAX_VALUE;
         int bestCategoryId = -1;
+        /*
         for(Element element: resultVector.all()) {
             int categoryId = element.index();
             double score = element.get();
@@ -105,6 +106,8 @@ public class SpamClassifier {
                 bestCategoryId = categoryId;
             }
         }
+        */
+        System.out.println("where am i?");
 
         analyzer.close();
         return labels.get(bestCategoryId);
